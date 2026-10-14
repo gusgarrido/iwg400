@@ -15,7 +15,7 @@ Antes de copiar el repositorio, asegura tener una llave SSH vinculada con tu cue
 
 Asegura tener instalado las siguientes dependencias:
 - [Git](https://git-scm.com/install/windows)
-- [Python 3.12+](https://www.python.org/downloads/)
+- [Python 3.14+](https://www.python.org/downloads/)
 
 ## Clonar el repositorio e instalar dependencias
 
