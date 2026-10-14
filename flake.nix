@@ -7,7 +7,7 @@
 
   outputs = { nixpkgs, pyproject-nix, ... } :
     let
-      project = pyproject-nix.lib.project.loadRequirementsTxt { projectRoot = ./.; };
+      project = pyproject-nix.lib.project.loadPyproject { projectRoot = ./.; };
 
       system = "x86_64-linux";
       pkgs = import nixpkgs {
@@ -19,7 +19,13 @@
         let
           pythonEnv = python.withPackages ( project.renderers.withPackages { inherit python; } );
         in
-        pkgs.mkShell { packages = [ pythonEnv ]; };
+        pkgs.mkShell { packages = [
+          pkgs.pyright
+          
+          pythonEnv
+          python.pkgs.black
+          python.pkgs.isort
+        ]; };
 
       packages.${system}.default =
         let

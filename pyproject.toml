@@ -5,6 +5,7 @@ description = "Proyecto del Grupo 11 Enigma para IWG400."
 requires-python = ">=3.14"
 readme = { file = "README.md", content-type = "text/markdown" }
 license = { file = "LICENSE" }
+dynamic = ["dependencies"]
 authors = [
     { name = "Carlos R", email = "crojascas@usm.cl" },
     { name = "Diego G", email = "dgutierrezmo@usm.cl" },
@@ -13,7 +14,20 @@ authors = [
     { name = "Martin M", email = "mmanzanoa@usm.cl" }
 ]
 
-dynamic = ["dependencies"]
-
 [tool.setuptools.dynamic]
 dependencies = {file = ["requirements.txt"]}
+
+[tool.black]
+line-length = 120
+skip-magic-trailing-comma = true
+
+[tool.pyright]
+pythonVersion = "3.14"
+typeCheckingMode = "strict"
+reportUnnecessaryTypeIgnoreComment = "warning"
+
+[tool.isort]
+profile = "black"
+combine_as_imports = true
+combine_star = true
+line_length = 120
