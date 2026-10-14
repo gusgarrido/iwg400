@@ -1,5 +1,7 @@
+# -*- coding: utf-8 -*-
+
 """
-ASGI config for enigma project.
+ASGI config for Enigma project.
 
 It exposes the ASGI callable as a module-level variable named ``application``.
 
@@ -11,6 +13,6 @@ import os
 
 from django.core.asgi import get_asgi_application
 
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "enigma.settings")
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "src.settings")
 
 application = get_asgi_application()
