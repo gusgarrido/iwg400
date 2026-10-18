@@ -14,7 +14,7 @@ Antes de copiar el repositorio, asegura tener una llave SSH vinculada con tu cue
 
 ## Requisitos
 
-Asegura tener instalado las siguientes dependencias ya instaladas:
+Asegura tener instalado las siguientes dependencias:
 - [Git](https://git-scm.com/install/windows)
 - [Python 3.14+](https://www.python.org/downloads/)
 
@@ -32,7 +32,7 @@ py -3 -m pip install -r requirements.txt
 
 # Ejecución
 
-Asegura que tu directorio activo sea el nivel más alto de este proyecto. Para probar la página desde su propia máquina, ejecuta el siguiente comando:
+Asegura que tu directorio activo sea el nivel más alto de este proyecto. Para probar la página desde tu propia máquina, ejecuta el siguiente comando:
 
 ```cmd
 python manage.py runserver
