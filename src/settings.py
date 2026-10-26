@@ -33,6 +33,8 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    "src.apps.reports.apps.ReportsConfig",
+    "src.apps.login.apps.LoginConfig",
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
