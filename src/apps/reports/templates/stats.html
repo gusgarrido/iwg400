@@ -1,0 +1,204 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Estadísticas de incidentes</title>
+
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+    <link rel="stylesheet" href="{% static 'index.css' %}">
+    <link rel="stylesheet" href="{% static 'stats.css' %}">
+</head>
+
+<body>
+    <main class="layout">
+
+        <!-- ============ IZQUIERDA: MAPA ============ -->
+        <section class="panel panel-mapa">
+            <div class="panel-header">
+                <h1>Mapa de incidentes</h1>
+                <a href="{% url 'index' %}" class="go-back">&larr; Volver a reportes</a>
+            </div>
+
+            <div id="map"></div>
+
+            <div class="legend">
+                <span class="legend-title">Nivel de riesgo:</span>
+                <span class="legend-item"><i style="background:#16a34a"></i>Bajo</span>
+                <span class="legend-item"><i style="background:#ca8a04"></i>Medio</span>
+                <span class="legend-item"><i style="background:#ea580c"></i>Alto</span>
+                <span class="legend-item"><i style="background:#dc2626"></i>Crítico</span>
+            </div>
+            <p class="legend-note">
+                El color depende de la cantidad de reportes y su severidad
+                (baja = 1, media = 2, alta = 3, crítica = 4 puntos por reporte).
+            </p>
+        </section>
+
+        <!-- ============ DERECHA: GRÁFICOS ============ -->
+        <section class="panel panel-graphs">
+            <div class="graph-block">
+                <h2>Reportes a lo largo del tiempo</h2>
+                <div class="graph"><canvas id="chart-time"></canvas></div>
+            </div>
+
+            <div class="graph-block">
+                <h2>Tipo de reporte por severidad</h2>
+                <div class="graph"><canvas id="chart-kind-severity"></canvas></div>
+            </div>
+        </section>
+    </main>
+
+    {# Lista de reportes: [{restaurant:{name,lat,lon}, kind, severity, date}, ...] #}
+    {{ reports|json_script:"reports-data" }}
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+    <script>
+        (function () {
+            const reports = JSON.parse(document.getElementById('reports-data').textContent);
+
+            /* ---------- Configuración común ---------- */
+            const SEVERITIES = ['low', 'medium', 'high', 'critical'];
+            const WEIGHT = { low: 1, medium: 2, high: 3, critical: 4 };
+            const COLOR_SEV = { low: '#16a34a', medium: '#ca8a04', high: '#ea580c', critical: '#dc2626' };
+            const LABEL_SEV = { low: 'Baja', medium: 'Mediana', high: 'Alta', critical: 'Crítica' };
+            const LABEL_KIND = {
+                security: 'Seguridad', infrastructure: 'Infraestructura',
+                service: 'Servicio', accident: 'Accidente', other: 'Otro'
+            };
+            const labelKind = k => LABEL_KIND[k] || k;
+
+            /* ---------- MAPA ---------- */
+            // Población Vergara, Viña del Mar (coordenadas aproximadas: ajústalas si es necesario)
+            const DEFAULT_CENTRE = [-33.0176, -71.5517];
+            const DEFAULT_ZOOM = 16;
+            const DEFAULT_RADIUS = 100;  // metros
+
+            const map = L.map('map').setView(DEFAULT_CENTRE, DEFAULT_ZOOM);
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                maxZoom: 19,
+                attribution: '&copy; OpenStreetMap contributors'
+            }).addTo(map);
+
+            // Agrupar reportes por restaurante
+            const restaurants = {};
+            reports.forEach(r => {
+                const { name, lat, lon } = r.restaurant;
+                const key = name + '|' + lat + '|' + lon;
+                if (!restaurants[key]) {
+                    restaurants[key] = { name, lat, lon, total: 0, points: 0, sev: {}, kinds: {} };
+                }
+                const g = restaurants[key];
+                g.total += 1;
+                g.points += WEIGHT[r.severity] || 1;
+                g.sev[r.severity] = (g.sev[r.severity] || 0) + 1;
+                g.kinds[r.kind] = (g.kinds[r.kind] || 0) + 1;
+            });
+
+            // Color según puntaje acumulado (cantidad x severidad)
+            function colorByPoints(p) {
+                if (p <= 3) return '#16a34a';   // bajo
+                if (p <= 6) return '#ca8a04';   // medio
+                if (p <= 10) return '#ea580c';  // alto
+                return '#dc2626';               // crítico
+            }
+
+            Object.values(restaurants).forEach(g => {
+                const color = colorByPoints(g.points);
+
+                const detailsSev = SEVERITIES
+                    .filter(s => g.sev[s])
+                    .map(s => `${LABEL_SEV[s]}: ${g.sev[s]}`).join('<br>');
+                const detailsKind = Object.entries(g.kinds)
+                    .map(([k, n]) => `${labelKind(k)}: ${n}`).join('<br>');
+
+                // Leaflet usa [latitud, longitud]
+                L.circle([g.lat, g.lon], {
+                    radius: DEFAULT_RADIUS,
+                    color: color,
+                    weight: 2,
+                    fillColor: color,
+                    fillOpacity: 0.4
+                })
+                    .bindPopup(
+                        `<strong>${g.name}</strong><br>` +
+                        `${g.total} reporte(s)<br><br>` +
+                        `<u>Severidad</u><br>${detailsSev}<br><br>` +
+                        `<u>Tipo</u><br>${detailsKind}`
+                    )
+                    .addTo(map);
+            });
+
+            /* ---------- GRÁFICO 1: reportes vs tiempo ---------- */
+            const byDate = {};
+            reports.forEach(r => {
+                const date = String(r.date).slice(0, 10);   // YYYY-MM-DD
+                byDate[date] = (byDate[date] || 0) + 1;
+            });
+            const dates = Object.keys(byDate).sort();
+            const dateFormat = d => d.split('-').reverse().join('/');
+
+            new Chart(document.getElementById('chart-time'), {
+                type: 'line',
+                data: {
+                    labels: dates.map(dateFormat),
+                    datasets: [{
+                        label: 'Reportes',
+                        data: dates.map(d => byDate[d]),
+                        borderColor: '#2563eb',
+                        backgroundColor: 'rgba(37, 99, 235, 0.15)',
+                        fill: true,
+                        tension: 0.3,
+                        pointRadius: 4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        x: { title: { display: true, text: 'Fecha' } },
+                        y: {
+                            beginAtZero: true,
+                            ticks: { precision: 0 },
+                            title: { display: true, text: 'Cantidad de reportes' }
+                        }
+                    }
+                }
+            });
+
+            /* ---------- GRÁFICO 2: tipo vs severidad (barras apiladas) ---------- */
+            const kinds = Array.from(new Set(reports.map(r => r.kind))).sort();
+
+            const datasets = SEVERITIES.map(sev => ({
+                label: LABEL_SEV[sev],
+                backgroundColor: COLOR_SEV[sev],
+                data: kinds.map(t => reports.filter(r => r.kind === t && r.severity === sev).length)
+            }));
+
+            new Chart(document.getElementById('chart-kind-severity'), {
+                type: 'bar',
+                data: { labels: kinds.map(labelKind), datasets },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { position: 'bottom' } },
+                    scales: {
+                        x: { stacked: true, title: { display: true, text: 'Tipo de reporte' } },
+                        y: {
+                            stacked: true,
+                            beginAtZero: true,
+                            ticks: { precision: 0, stepSize: 1 },   // solo números naturales
+                            title: { display: true, text: 'Cantidad de reportes' }
+                        }
+                    }
+                }
+            });
+        })();
+    </script>
+</body>
+
+</html>

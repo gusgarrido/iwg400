@@ -1,0 +1,121 @@
+/* Complementa incidentes.css (cargar después de él): usa sus variables, .layout y .panel */
+
+/* ---------- Panel del mapa ---------- */
+.panel-maps {
+    display: flex;
+    flex-direction: column;
+}
+
+.panel-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 12px;
+    margin-bottom: 14px;
+}
+
+.panel-header h1 {
+    margin: 0;
+}
+
+.go-back {
+    font-size: 0.9rem;
+    color: var(--primary);
+    text-decoration: none;
+    white-space: nowrap;
+}
+
+.go-back:hover {
+    text-decoration: underline;
+}
+
+#map {
+    flex: 1;
+    min-height: 300px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    z-index: 0;
+}
+
+.legend {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 14px;
+    margin-top: 12px;
+    font-size: 0.85rem;
+}
+
+.legend-title {
+    font-weight: 600;
+}
+
+.legend-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.legend-item i {
+    display: inline-block;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+}
+
+.legend-note {
+    margin: 6px 0 0;
+    font-size: 0.78rem;
+    color: var(--muted);
+}
+
+/* ---------- Panel de gráficos ---------- */
+.panel-graphs {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.graph-block {
+    flex: 1;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+}
+
+.graph-block h2 {
+    margin: 0 0 10px;
+    font-size: 1.1rem;
+}
+
+.graph {
+    position: relative;
+    /* requerido por Chart.js con maintainAspectRatio: false */
+    flex: 1;
+    min-height: 0;
+}
+
+/* ---------- Responsive ---------- */
+@media (max-width: 800px) {
+    .panel-maps {
+        height: auto;
+    }
+
+    #map {
+        flex: none;
+        height: 60vh;
+    }
+
+    .panel-graphs {
+        height: auto;
+    }
+
+    .graphs-block {
+        flex: none;
+    }
+
+    .graph {
+        flex: none;
+        height: 320px;
+    }
+}

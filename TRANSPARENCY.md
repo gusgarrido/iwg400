@@ -19,8 +19,8 @@ Se da por entendido que el código generado por la IA puede ser levemente modifi
 ***
 
 > Por temas de espacio y legibilidad, los archivos resultantes de esta interacción no se incluyen en este apartado.
-> 1. El archivo HTML generado se encuentra en `src/apps/reports/templates/reports/index.html`.
-> 2. El archivo CSS generado se encuentra en `src/apps/reports/static/reports/index.css`
+> 1. El archivo HTML generado se encuentra en `src/apps/reports/templates/index.html`.
+> 2. El archivo CSS generado se encuentra en `src/apps/reports/static/index.css`
 
 <details>
     <summary>Prompt</summary>
@@ -141,3 +141,88 @@ Con los filtros vacíos, el enlace es simplemente /generate_stats/.
 
 > [!NOTE]
 > _Nótese que la IA añadió el campo `q`, representando el query de búsqueda de la lista de reportes. Este campo no es relevante al momento de generar los modelos estadísticos, por lo que será omitido en la versión final._
+
+***
+
+> Por temas de espacio y legibilidad, los archivos resultantes de esta interacción no se incluyen en este apartado.
+> 1. El archivo HTML generado se encuentra en `src/apps/reports/templates/stats.html`.
+> 2. El archivo CSS generado se encuentra en `src/apps/reports/static/stats.css`
+
+<details>
+    <summary>Prompt</summary>
+
+```
+Genera un archivo HTML (y si es necesario, un archivo CSS que mantenga el estilo de la página inicial de reportes) donde se podrán visualizar las estadísticas. La página debe estar dividida nuevamente en dos secciones:
+
+A la izquierda, debe haber un mapa interactivo generado con Leaflet que, por defecto, debe mostrar la Población Vergara de Viña del Mar. Al mapa se le darán reportes que tienen la siguiente estructura:
+
+1. Restaurante (longitud, latitud)
+2. Kind (tipo)
+3. Severity (severidad)
+
+Sobre el mapa, se deberán generar círculos con un radio de 100 metros desde el punto de origen (long y lat del restaurante) del reporte. Dependiendo de la cantidad de reportes por restaurante y la severidad, el color del círculo debe ir variando.
+
+A la derecha, deben ir dos gráficos, uno encima del otro, generado por Chart.js. El primer gráfico debe comparar la cantidad total de reportes con respecto al tiempo. El segundo gráfico debe comparar el tipo del reporte vs su severidad (tipo de reporte en el eje X, recta de números naturales en el eje Y, y cada barra debe estar sub-dividida por severidad, siendo proporcional a la cantidad de reportes con esa severidad para esa categoría en específico)
+```
+
+</details>
+
+<details>
+    <summary>Respuesta</summary>
+
+```
+Generé la plantilla stats.html y su hoja de estilos stats.css. El CSS se carga después de incidentes.css y reutiliza sus variables, el .layout de dos columnas y los paneles, así que mantiene el estilo de la página de reportes.
+
+Dónde colocarlos
+
+stats.html va junto a foro_incidentes.html, en templates/incidentes/.
+stats.css va junto a incidentes.css, en static/css/.
+
+Qué incluye
+
+Izquierda: un mapa Leaflet centrado por defecto en la Población Vergara. Cada restaurante se dibuja con un círculo de 100 m de radio, y al hacer clic muestra un popup con el total de reportes y el desglose por severidad y tipo. Debajo hay una leyenda de colores.
+Derecha, arriba: un gráfico de líneas con la cantidad de reportes por día.
+Derecha, abajo: un gráfico de barras apiladas con el tipo de reporte en el eje X y la cantidad en el eje Y, solo con números enteros. Cada barra está dividida por severidad, con los mismos colores del listado de reportes.
+
+Cómo se calcula el color de los círculos
+
+Cada reporte suma puntos según su severidad (baja = 1, media = 2, alta = 3, crítica = 4), y el puntaje total del restaurante define el color. Así, muchos reportes leves y pocos reportes graves pueden dar un color parecido:
+
+hasta 3 puntos: verde
+4 a 6: amarillo
+7 a 10: naranja
+más de 10: rojo
+
+Estos umbrales están en la función colorPorPuntaje del script, por si quieres ajustarlos.
+
+Vista de Django
+
+La plantilla espera una variable reports con esta forma:
+```
+```python
+def generate_stats(request):
+    reports = Report.objects.select_related("origin")
+    # ... tus filtros GET (kind, severity, date_from, date_to, q) ...
+
+    data = [
+        {
+            "restaurant": {"name": r.origin.name, "lat": r.origin.lat, "lon": r.origin.lon},
+            "kind": r.kind,
+            "severity": r.severity,
+            "date": r.date.isoformat(),
+        }
+        for r in reports
+    ]
+    return render(request, "incidentes/stats.html", {"reports": data})
+```
+```
+Cosas a revisar
+
+Coordenadas: las de la Población Vergara ([-33.0176, -71.5517], zoom 16) son aproximadas y no las verifiqué. Ajústalas en las constantes CENTRO_DEFECTO y ZOOM_DEFECTO si el mapa no cae donde esperas.
+Orden de las coordenadas: Leaflet recibe [latitud, longitud]. Si tu modelo guarda lat y lon por separado, el código ya lo respeta, pero ten cuidado de no invertirlos al guardar los datos.
+Fecha: el gráfico temporal necesita la fecha de cada reporte, aunque no estaba en la estructura que me diste. Por eso el JSON incluye el campo date.
+Nombre de la URL: el enlace “Volver a reportes” usa {% url 'foro_incidentes' %}, el nombre que usé en el urls.py de ejemplo.
+Filtros: como los filtros de la página anterior llegan por GET a generate_stats, tanto el mapa como los gráficos mostrarán solo los reportes filtrados.
+```
+
+</details>
