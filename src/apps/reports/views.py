@@ -40,7 +40,7 @@ def generate_stats(request: HttpRequest) -> HttpResponse:
                 "restaurant": {"name": r.origin.name, "lat": r.origin.lat, "lon": r.origin.lon},
                 "kind": r.kind,
                 "severity": r.severity,
-                "date": r.date,
+                "date": r.date.isoformat(),
             }
             for r in reports
         ]
