@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from django.db.models import CASCADE, FloatField, CharField, DateTimeField, ForeignKey, Model
+from django.db.models import CASCADE, CharField, DateTimeField, FloatField, ForeignKey, Model
 
 
 class Restaurant(Model):
