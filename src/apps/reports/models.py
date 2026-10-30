@@ -1,12 +1,12 @@
 from datetime import datetime
 
-from django.db.models import CASCADE, BigIntegerField, CharField, DateTimeField, ForeignKey, Model
+from django.db.models import CASCADE, FloatField, CharField, DateTimeField, ForeignKey, Model
 
 
 class Restaurant(Model):
     name: CharField[str] = CharField(max_length=256)
-    lat: BigIntegerField[int] = BigIntegerField("latitude")
-    lon: BigIntegerField[int] = BigIntegerField("longitude")
+    lat: FloatField[float] = FloatField("latitude")
+    lon: FloatField[float] = FloatField("longitude")
 
 
 class Report(Model):
