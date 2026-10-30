@@ -28,8 +28,8 @@ def generate_stats(request: HttpRequest) -> HttpResponse:
             for kwarg, filt in {
                 (None, "kind"),
                 (None, "severity"),
-                ("date__date__gte", "before"),
-                ("date__date__lte", "after"),
+                ("date__gte", "after"),
+                ("date__lte", "before"),
             }
             if filt in request.GET
         }
