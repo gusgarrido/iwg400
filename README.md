@@ -7,11 +7,6 @@ Aplicación web del grupo Enigma (11) para la asignatura IWG400 (Proyecto Inicia
 
 # Instalación
 
-Antes de copiar el repositorio, asegura tener una llave SSH vinculada con tu cuenta de GitHub. Si no sabes qué es eso, revisa la siguiente documentación y sigue los pasos recomendados ahí:
-
-- [Generación de una nueva clave SSH y adición al agente SSH](https://docs.github.com/es/authentication/connecting-to-github-with-ssh/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent)
-- [Agregar una clave SSH nueva a tu cuenta](https://docs.github.com/es/authentication/connecting-to-github-with-ssh/adding-a-new-ssh-key-to-your-github-account?platform=windows&tool=webui)
-
 ## Requisitos
 
 Asegura tener instalado las siguientes dependencias:
@@ -20,10 +15,11 @@ Asegura tener instalado las siguientes dependencias:
 
 ## Clonar el repositorio e instalar dependencias
 
-Ejecuta el siguiente comando en el terminal para descargar los archivos a la máquina local:
+Ejecuta el siguiente comando en el terminal para descargar los archivos a la máquina local e instalar las dependencias:
 
 ```cmd
-git clone git@github.com:gusgarrido/iwg400
+git clone https://github.com/gusgarrido/iwg400.git
+cd iwg400
 py -3 -m pip install -r requirements.txt
 ```
 
