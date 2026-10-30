@@ -18,9 +18,16 @@ Including another URLconf
 """
 
 from django.contrib import admin
-from django.urls import path, include
+from django.http import HttpRequest, HttpResponse, HttpResponsePermanentRedirect
+from django.urls import include, path
+
+
+def reports_redirect(req: HttpRequest) -> HttpResponse:
+    return HttpResponsePermanentRedirect("reports")
+
 
 urlpatterns = [
+    path("", reports_redirect),
     path("admin/", admin.site.urls),
     path("login/", include("src.apps.login.urls")),
     path("reports/", include("src.apps.reports.urls")),
