@@ -39,7 +39,15 @@
 
                 <div class="field">
                     <label for="date">Fecha y hora del incidente</label>
-                    <input type="datetime-local" id="date" name="date" required>
+                    <input type="datetime-local" id="date" name="date" required max="today" min="ninetydaysago">  
+
+                    <script>
+                        const today = new Date();
+                        const ninetydaysago = new Date();
+                        ninetydaysago.setDate(today.getDate() - 90)
+                        document.getElementById('date').max = today.toISOString().slice(0, 16);
+                        document.getElementById('date').min = ninetydaysago.toISOString().slice(0, 16);
+                    </script>
                 </div>
 
                 <div class="field">
