@@ -10,6 +10,24 @@
 </head>
 
 <body>
+
+    <nav class="app-navbar">
+        <div class="app-navbar__left">
+            <span class="app-name">RestAlert</span>
+        </div>
+
+        <div class="app-navbar__right">
+            <span class="app-user">
+                {{ request.user.username }}
+            </span>
+
+            <form method="post" action="{% url 'logout' %}">
+                {% csrf_token %}
+                <button type="submit" class="btn-logout">Cerrar Sesión</button>
+            </form>
+        </div>
+    </nav>
+
     <main class="layout">
 
         <!-- ============ IZQUIERDA: FORMULARIO ============ -->
@@ -39,15 +57,7 @@
 
                 <div class="field">
                     <label for="date">Fecha y hora del incidente</label>
-                    <input type="datetime-local" id="date" name="date" required max="today" min="ninetydaysago">  
-
-                    <script>
-                        const today = new Date();
-                        const ninetydaysago = new Date();
-                        ninetydaysago.setDate(today.getDate() - 90)
-                        document.getElementById('date').max = today.toISOString().slice(0, 16);
-                        document.getElementById('date').min = ninetydaysago.toISOString().slice(0, 16);
-                    </script>
+                    <input type="datetime-local" id="date" name="date" required>
                 </div>
 
                 <div class="field">
