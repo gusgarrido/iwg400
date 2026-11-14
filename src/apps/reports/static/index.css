@@ -31,7 +31,8 @@ body {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 24px;
-    height: 100vh;
+    height: calc(100vh - 68px);
+    ;
     padding: 24px;
     max-width: 1300px;
     margin: 0 auto;
@@ -299,6 +300,48 @@ textarea:focus {
 
 .btn-apply:hover {
     background: #1d4ed8;
+}
+
+.app-navbar {
+    height: 68px;
+    padding: 0 24px;
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.app-name {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: var(--primary);
+}
+
+.app-navbar__right {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.app-user {
+    font-weight: 600;
+    color: var(--text);
+}
+
+.btn-logout {
+    font: inherit;
+    font-weight: 600;
+    padding: 8px 14px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: #fff;
+    color: var(--text);
+    cursor: pointer;
+}
+
+.btn-logout:hover {
+    background: #f9fafb;
 }
 
 /* ---------- Responsive ---------- */

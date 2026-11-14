@@ -1,12 +1,11 @@
 from datetime import datetime
+from typing import TYPE_CHECKING
 
-from django.db.models import CASCADE, CharField, DateTimeField, FloatField, ForeignKey, Model
+from django.conf import settings
+from django.db.models import CASCADE, CharField, DateTimeField, ForeignKey, Model
 
-
-class Restaurant(Model):
-    name: CharField[str] = CharField(max_length=256)
-    lat: FloatField[float] = FloatField("latitude")
-    lon: FloatField[float] = FloatField("longitude")
+if TYPE_CHECKING:
+    from ..login.models import Restaurant
 
 
 class Report(Model):
@@ -20,7 +19,7 @@ class Report(Model):
 
     SEVERITIES = [("low", "Baja"), ("medium", "Mediana"), ("high", "Alta"), ("critical", "Crítica")]
 
-    origin: ForeignKey[Restaurant] = ForeignKey(Restaurant, on_delete=CASCADE)
+    origin: ForeignKey[Restaurant] = ForeignKey(settings.AUTH_USER_MODEL, on_delete=CASCADE)
     kind: CharField[str] = CharField(max_length=16, choices=KINDS)
     description: CharField[str] = CharField()
     date: DateTimeField[datetime] = DateTimeField()

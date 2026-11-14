@@ -1,10 +1,8 @@
-from datetime import datetime
+from django.contrib.auth.models import AbstractUser
+from django.db.models import EmailField, FloatField
 
-from django.db.models import CharField, DateTimeField, Model
 
-
-class User(Model):
-    username: CharField[str] = CharField(max_length=256)
-    email: CharField[str] = CharField(max_length=256)
-    ps: CharField[str] = CharField("password hash", max_length=256)
-    created: DateTimeField[datetime] = DateTimeField("creation date")
+class Restaurant(AbstractUser):
+    email: EmailField[str] = EmailField(unique=True)
+    lat: FloatField[float] = FloatField("latitude")
+    lon: FloatField[float] = FloatField("longitude")

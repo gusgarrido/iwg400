@@ -226,3 +226,188 @@ Filtros: como los filtros de la página anterior llegan por GET a generate_stats
 ```
 
 </details>
+
+***
+
+> Por temas de espacio y legibilidad, los archivos resultantes de esta interacción no se incluyen en este apartado.
+> 1. El archivo HTML generado se encuentra en `src/apps/login/templates/index.html`.
+> 2. El archivo CSS generado se encuentra en `src/apps/login/static/index.css`
+
+<details>
+    <summary>Prompt</summary>
+
+```
+Genera un archivo HTML (y si es necesario, un archivo CSS que mantenga el estilo de la página) para que un usuario pueda iniciar sesión. Al iniciar sesión, el usuario debe ser redirigido a "/reports". Esto debe ser generado tomando en cuenta que el endpoint de login se encuentra dentro de la app "apps/login".
+```
+
+
+</details>
+
+<details>
+    <summary>Respuesta</summary>
+
+```md
+La vista real de la app está en views.py, y la ruta en urls.py. Por eso el formulario debe renderizarse desde la app de login y, al hacer POST válido, redirigir a /reports.
+
+1) Vista de login
+[...]
+```
+```py
+from django.http import HttpRequest, HttpResponse, HttpResponsePermanentRedirect
+from django.shortcuts import render
+
+def index(request: HttpRequest) -> HttpResponse:
+    if request.method == "POST":
+        username = request.POST.get("username", "").strip()
+        password = request.POST.get("password", "").strip()
+
+        if not username or not password:
+            return render(request, "login.html", {"error": "Debes completar usuario y contraseña."})
+
+        # Si quieres validar contra tu modelo:
+        # from .models import User
+        # user = User.objects.filter(username=username, ps=password).first()
+        # if user is None:
+        #     return render(request, "login.html", {"error": "Usuario o contraseña inválidos."})
+
+        return HttpResponsePermanentRedirect("/reports")
+
+    return render(request, "login.html")
+```
+```md
+2) Plantilla HTML
+Usa esta plantilla dentro de la app de login:
+[...]
+
+3) CSS para mantener el estilo
+Este CSS va en el estático de la app de login:
+[...]
+
+Resultado esperado
+La ruta de login sigue siendo la app de login.
+El usuario rellena usuario y contraseña.
+Al enviar el formulario, Django redirige a /reports.
+Si quieres mantener el estilo de la página de reportes, puedes usar los mismos colores y radios de index.css.
+Si quieres, también te puedo dejar la versión con django.contrib.auth usando authenticate y login en lugar de validar contra el modelo User.
+```
+
+</details>
+
+> [!NOTE]
+> _Utilizando como referencia el archivo `src/apps/reports/templates/index.html`, se agregó la sección `<script></script>` para que el botón de inicio de sesión solo se encuentre disponible cuando todos los campos estén completos, y así no tener que mostrar un error para campos incompletos._
+
+***
+
+<details>
+    <summary>Prompt</summary>
+
+```
+Crea un navbar. Debe estar posicionada en la parte de arriba de la página. A la derecha, debe aparecer el nombre de usuario de la cuenta que está activa, y al lado un botón de Cerrar Sesión. A la izquierda, debe verse el nombre de la aplicación: RestAlert.
+```
+
+</details>
+
+<details>
+    <summary>Respuesta</summary>
+
+```
+I will leave the exact blocks so you can paste them in your current page.
+
+1. Add the navbar HTML in index.html, right after opening body and before main:
+```
+```html
+<nav class="app-navbar">
+    <div class="app-navbar__left">
+        <span class="app-name">RestAlert</span>
+    </div>
+
+    <div class="app-navbar__right">
+        <span class="app-user">
+            {% if request.user.is_authenticated %}
+                {{ request.user.username }}
+            {% else %}
+                Invitado
+            {% endif %}
+        </span>
+
+        <form method="post" action="{% url 'logout' %}">
+            {% csrf_token %}
+            <button type="submit" class="btn-logout">Cerrar Sesión</button>
+        </form>
+    </div>
+</nav>
+```
+```
+2. Add these styles in index.css:
+```
+```css
+.app-navbar {
+    height: 68px;
+    padding: 0 24px;
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.app-name {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: var(--primary);
+}
+
+.app-navbar__right {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.app-user {
+    font-weight: 600;
+    color: var(--text);
+}
+
+.btn-logout {
+    font: inherit;
+    font-weight: 600;
+    padding: 8px 14px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: #fff;
+    color: var(--text);
+    cursor: pointer;
+}
+
+.btn-logout:hover {
+    background: #f9fafb;
+}
+
+/* Ajuste para que el layout no choque con el navbar */
+.layout {
+    height: calc(100vh - 68px);
+}
+```
+```
+3. Ensure you have a logout route in urls.py (same level where login is configured):
+```
+```py
+from django.contrib.auth import views as auth_views
+
+urlpatterns = [
+    # ...
+    path("login/", auth_views.LoginView.as_view(template_name="login.html"), name="login"),
+    path("logout/", auth_views.LogoutView.as_view(), name="logout"),
+    path("reports/", include("src.apps.reports.urls"), name="reports"),
+]
+```
+```
+Important detail:
+
+- Since you already have the auth context processor enabled in settings.py, request.user.username will work in templates.
+- If your login template is in login.html, use template_name="login.html" (not login.html).
+```
+</details>
+
+> [!NOTE]
+> _En el campo de nombre de usuario, se ocupa "Invitado" en el caso de que no exista usuario que esté con su sesión iniciada. La página web exige que el usuario haya iniciado sesión para crear y visualizar reportes, por lo que este campo se modificará para solo incluir el nombre de usuario, y no tener este caso de reserva._
