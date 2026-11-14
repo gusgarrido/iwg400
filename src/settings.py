@@ -34,7 +34,7 @@ ALLOWED_HOSTS = []
 
 INSTALLED_APPS = [
     "src.apps.reports.apps.ReportsConfig",
-    "src.apps.login.apps.LoginConfig",
+    "src.apps.accounts.apps.AccountsConfig",
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
@@ -115,6 +115,6 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 # Authentication config
 
 LOGIN_REDIRECT_URL = "/reports"
-LOGOUT_REDIRECT_URL = "/login"
+LOGOUT_REDIRECT_URL = "/accounts"
 
-AUTH_USER_MODEL = "login.Restaurant"
+AUTH_USER_MODEL = "accounts.Restaurant"

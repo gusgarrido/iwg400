@@ -1,3 +1,5 @@
+from typing import TYPE_CHECKING
+
 from django.contrib.auth import get_user_model
 from django.http import HttpRequest, HttpResponse, HttpResponsePermanentRedirect
 from django.shortcuts import render
@@ -6,7 +8,10 @@ from django.views.decorators.http import require_POST
 from .models import Report
 from .utils import require_login
 
-Restaurant = get_user_model()
+if TYPE_CHECKING:
+    from ..accounts.models import Restaurant as UserModel
+
+Restaurant: type[UserModel] = get_user_model()  # type: ignore
 
 
 @require_login
@@ -31,8 +36,6 @@ def create_report(request: HttpRequest) -> HttpResponse:
 
 @require_login
 def generate_stats(request: HttpRequest) -> HttpResponse:
-    if not request.user.is_authenticated:
-        return HttpResponsePermanentRedirect("/login")
     reports = Report.objects.filter(
         **{
             (kwarg or filt): request.GET[filt]

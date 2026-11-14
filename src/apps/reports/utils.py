@@ -11,7 +11,7 @@ def require_login(
 
     def wrapper(req: HttpRequest, *args: P.args, **kwargs: P.kwargs) -> HttpResponse:
         if not req.user.is_authenticated:
-            return HttpResponsePermanentRedirect("/login")
+            return HttpResponsePermanentRedirect("/accounts")
         return f(req, *args, **kwargs)
 
     return wrapper

@@ -5,7 +5,7 @@ from django.conf import settings
 from django.db.models import CASCADE, CharField, DateTimeField, ForeignKey, Model
 
 if TYPE_CHECKING:
-    from ..login.models import Restaurant
+    from ..accounts.models import Restaurant
 
 
 class Report(Model):

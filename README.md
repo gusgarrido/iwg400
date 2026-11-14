@@ -31,7 +31,7 @@ py -3 -m pip install -r requirements.txt
 Asegura que tu directorio activo sea el nivel más alto de este proyecto. Para probar la página desde tu propia máquina, primero asegura tener la base de datos al día:
 
 ```cmd
-py -3 manage.py makemigrations login reports
+py -3 manage.py makemigrations accounts reports
 py -3 manage.py migrate
 ```
 

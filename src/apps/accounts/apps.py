@@ -1,6 +1,6 @@
 from django.apps import AppConfig
 
 
-class LoginConfig(AppConfig):
+class AccountsConfig(AppConfig):
     default_auto_field = "django.db.models.BigAutoField"
-    name = "src.apps.login"
+    name = "src.apps.accounts"

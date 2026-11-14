@@ -28,7 +28,7 @@ def reports_redirect(req: HttpRequest) -> HttpResponse:
 
 urlpatterns = [
     path("", reports_redirect),
-    path("", include("src.apps.login.urls")),
     path("admin/", admin.site.urls),
+    path("accounts/", include("src.apps.accounts.urls"), name="accounts"),
     path("reports/", include("src.apps.reports.urls"), name="reports"),
 ]
