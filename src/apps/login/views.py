@@ -1,5 +1,7 @@
-from django.http import HttpResponse, HttpRequest
+from django.contrib import auth
+from django.http import HttpRequest, HttpResponse, HttpResponsePermanentRedirect
 
 
-def index(request: HttpRequest) -> HttpResponse:
-    return HttpResponse("Hello, world. You're at the login index.")
+def logout_redirect(req: HttpRequest) -> HttpResponse:
+    auth.logout(req)
+    return HttpResponsePermanentRedirect("/login")
