@@ -31,15 +31,18 @@ py -3 -m pip install -r requirements.txt
 Asegura que tu directorio activo sea el nivel más alto de este proyecto. Para probar la página desde tu propia máquina, primero asegura tener la base de datos al día:
 
 ```cmd
-python3 manage.py makemigrations
-python3 manage.py migrate
+py -3 manage.py makemigrations
+py -3 manage.py migrate
 ```
 
 Luego, puedes iniciar el servidor ejecutando el siguiente comando:
 
 ```
-python3 manage.py runserver
+py -3 manage.py runserver
 ```
+
+> [!NOTE]
+> Si utilizas Linux, cambia `py -3` por `python3`.
 
 Una vez listo, abre http://localhost:8000/ en el navegador.
 
