@@ -5,10 +5,18 @@ from django.conf import settings
 from django.db.models import CASCADE, CharField, DateTimeField, ForeignKey, Model
 
 if TYPE_CHECKING:
+    from django.db.models import BigAutoField
+
     from ..accounts.models import Restaurant
 
 
 class Report(Model):
+    if TYPE_CHECKING:
+        id: BigAutoField
+
+        def get_kind_display(self) -> str: ...
+        def get_severity_display(self) -> str: ...
+
     KINDS = [
         ("security", "Seguridad"),
         ("infrastructure", "Infraestructura"),
