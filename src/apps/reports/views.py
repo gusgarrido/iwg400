@@ -2,7 +2,13 @@ from typing import TYPE_CHECKING
 
 from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
-from django.http import HttpRequest, HttpResponse, HttpResponsePermanentRedirect
+from django.http import (
+    HttpRequest,
+    HttpResponse,
+    HttpResponsePermanentRedirect,
+    JsonResponse,
+)
+
 from django.shortcuts import render
 from django.views.decorators.http import require_POST
 
@@ -56,3 +62,48 @@ def generate_stats(request: HttpRequest) -> HttpResponse:
         ]
     }
     return render(request, "stats.html", ctx)
+
+
+def check_alerts(request: HttpRequest) -> JsonResponse:
+    if request.method != "GET":
+        return JsonResponse({"error": "Método no permitido"}, status=405)
+
+    last_id = request.GET.get("last_id")
+
+    if last_id is None:
+        latest = Report.objects.order_by("-id").first()
+
+        return JsonResponse({
+            "last_id": latest.id if latest else 0,
+            "reports": []
+        })
+
+    try:
+        last_id = int(last_id)
+        if last_id < 0:
+            raise ValueError
+
+    except ValueError:
+        return JsonResponse({"error": "ID inválido"}, status=400)
+    new_reports = (
+        Report.objects
+        .filter(id__gt=last_id)
+        .select_related("origin")
+        .order_by("id")[:50]
+    )
+    reports = []
+
+    for report in new_reports:
+        reports.append({
+            "id": report.id,
+            "kind": report.get_kind_display(),
+            "severity": report.get_severity_display(),
+            "description": report.description,
+        })
+    if reports:
+        last_id = reports[-1]["id"]
+    return JsonResponse({
+        "last_id": last_id,
+        "reports": reports
+    })
+
