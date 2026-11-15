@@ -66,28 +66,26 @@ def check_alerts(request: HttpRequest) -> JsonResponse:
 
     if last_id is None:
         latest = Report.objects.order_by("-id").first()
-
         return JsonResponse({"last_id": latest.id if latest else 0, "reports": []})
 
     try:
         last_id = int(last_id)
         if last_id < 0:
             raise ValueError
-
     except ValueError:
         return JsonResponse({"error": "ID inválido"}, status=400)
-    new_reports = Report.objects.filter(id__gt=last_id).select_related("origin").order_by("id")[:50]
-    reports = []
 
-    for report in new_reports:
-        reports.append(
-            {
-                "id": report.id,
-                "kind": report.get_kind_display(),
-                "severity": report.get_severity_display(),
-                "description": report.description,
-            }
-        )
+    new_reports = Report.objects.filter(id__gt=last_id).select_related("origin").order_by("id")[:50]
+    reports = [
+        {
+            "id": report.id,
+            "kind": report.get_kind_display(),
+            "severity": report.get_severity_display(),
+            "description": report.description,
+        }
+        for report in new_reports
+    ]
+
     if reports:
         last_id = reports[-1]["id"]
     return JsonResponse({"last_id": last_id, "reports": reports})
