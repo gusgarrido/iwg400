@@ -114,8 +114,9 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 # Authentication config
 
+LOGIN_URL = "/accounts"
 LOGIN_REDIRECT_URL = "/reports"
-LOGOUT_REDIRECT_URL = "/accounts"
+LOGOUT_REDIRECT_URL = LOGIN_URL
 
 AUTH_USER_MODEL = "accounts.Restaurant"
 

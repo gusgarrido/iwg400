@@ -1,12 +1,12 @@
 from typing import TYPE_CHECKING
 
 from django.contrib.auth import get_user_model
+from django.contrib.auth.decorators import login_required
 from django.http import HttpRequest, HttpResponse, HttpResponsePermanentRedirect
 from django.shortcuts import render
 from django.views.decorators.http import require_POST
 
 from .models import Report
-from .utils import require_login
 
 if TYPE_CHECKING:
     from ..accounts.models import Restaurant as UserModel
@@ -14,14 +14,14 @@ if TYPE_CHECKING:
 Restaurant: type[UserModel] = get_user_model()  # type: ignore
 
 
-@require_login
+@login_required
 def index(request: HttpRequest) -> HttpResponse:
     ctx: dict[str, object] = {"reports": Report.objects.order_by("-date")}
     return render(request, "index.html", ctx)
 
 
 @require_POST
-@require_login
+@login_required
 def create_report(request: HttpRequest) -> HttpResponse:
     data = request.POST
     r = Report(
@@ -35,7 +35,7 @@ def create_report(request: HttpRequest) -> HttpResponse:
     return HttpResponsePermanentRedirect("/reports")
 
 
-@require_login
+@login_required
 def generate_stats(request: HttpRequest) -> HttpResponse:
     reports = Report.objects.filter(
         **{
