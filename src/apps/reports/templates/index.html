@@ -57,7 +57,7 @@
 
                 <div class="field">
                     <label for="date">Fecha y hora del incidente</label>
-                    <input type="datetime-local" id="date" name="date" required max="today" min="ninetydaysago">  
+                    <input type="datetime-local" id="date" name="date" required max="today" min="ninetydaysago">
 
                     <script>
                         const today = new Date();
@@ -258,12 +258,9 @@
         })();
     </script>
     <!-- ============ Notificaciones alertas ============ -->
-    <div id="alerts-container"
-     data-url="{% url 'check_alerts' %}"
-     role="region"
-     aria-label="Alertas de incidentes"
-     aria-live="polite">
-</div>
+    <div id="alerts-container" data-url="{% url 'check_alerts' %}" role="region" aria-label="Alertas de incidentes"
+        aria-live="polite">
+    </div>
     <!-- ============ script alertas ============ -->
     <script src="{% static 'alerts.js' %}"></script>
 
