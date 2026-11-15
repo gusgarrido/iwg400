@@ -3,13 +3,19 @@ from django.http import HttpRequest, HttpResponse, HttpResponsePermanentRedirect
 from django.urls import path
 
 from . import views
+from .forms import EmailAuthenticationForm
 
 
 def index_redirect(req: HttpRequest) -> HttpResponse:
-    return HttpResponsePermanentRedirect("/accounts/login")
+    return HttpResponsePermanentRedirect("login")
+
 
 urlpatterns = [
     path("", index_redirect, name="index"),
-    path("login/", auth_views.LoginView.as_view(template_name="login.html"), name="login"),
-    path("logout/", views.logout_redirect, name="logout"),
+    path(
+        "login",
+        auth_views.LoginView.as_view(template_name="login.html", authentication_form=EmailAuthenticationForm),
+        name="login",
+    ),
+    path("logout", views.logout_redirect, name="logout"),
 ]

@@ -118,3 +118,5 @@ LOGIN_REDIRECT_URL = "/reports"
 LOGOUT_REDIRECT_URL = "/accounts"
 
 AUTH_USER_MODEL = "accounts.Restaurant"
+
+AUTHENTICATION_BACKENDS = ["src.apps.accounts.backends.EmailAuthBackend"]
