@@ -23,12 +23,13 @@ def index(request: HttpRequest) -> HttpResponse:
 @require_POST
 @require_login
 def create_report(request: HttpRequest) -> HttpResponse:
-    # TODO: vincular reporte con sesión activa
-    origin, _ = Restaurant.objects.get_or_create(name="NULL", defaults={"lat": 0, "lon": 0})
-
     data = request.POST
     r = Report(
-        origin=origin, kind=data["kind"], description=data["description"], date=data["date"], severity=data["severity"]
+        origin=request.user,
+        kind=data["kind"],
+        description=data["description"],
+        date=data["date"],
+        severity=data["severity"],
     )
     r.save()
     return HttpResponsePermanentRedirect("/reports")
