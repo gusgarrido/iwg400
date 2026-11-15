@@ -11,7 +11,7 @@ def index_redirect(req: HttpRequest) -> HttpResponse:
 
 
 urlpatterns = [
-    path("", index_redirect, name="index"),
+    path("", index_redirect),
     path(
         "login",
         auth_views.LoginView.as_view(template_name="login.html", authentication_form=EmailAuthenticationForm),
