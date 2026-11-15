@@ -13,6 +13,24 @@
 </head>
 
 <body>
+
+    <nav class="app-navbar">
+        <div class="app-navbar__left">
+            <span class="app-name">RestAlert</span>
+        </div>
+
+        <div class="app-navbar__right">
+            <span class="app-user">
+                {{ request.user.username }}
+            </span>
+
+            <form method="post" action="{% url 'logout' %}">
+                {% csrf_token %}
+                <button type="submit" class="btn-logout">Cerrar Sesión</button>
+            </form>
+        </div>
+    </nav>
+
     <main class="layout">
 
         <!-- ============ IZQUIERDA: MAPA ============ -->
