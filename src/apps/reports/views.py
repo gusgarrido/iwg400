@@ -49,7 +49,7 @@ def generate_stats(request: HttpRequest) -> HttpResponse:
     ctx: dict[str, object] = {
         "reports": [
             {
-                "restaurant": {"name": r.origin.username, "lat": r.origin.lat, "lon": r.origin.lon},
+                "restaurant": {"name": r.origin.display_name, "lat": r.origin.lat, "lon": r.origin.lon},
                 "kind": r.kind,
                 "severity": r.severity,
                 "date": r.date.isoformat(),
