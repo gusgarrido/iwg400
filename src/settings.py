@@ -120,4 +120,4 @@ LOGOUT_REDIRECT_URL = LOGIN_URL
 
 AUTH_USER_MODEL = "accounts.Restaurant"
 
-AUTHENTICATION_BACKENDS = ["src.apps.accounts.backends.EmailAuthBackend"]
+AUTHENTICATION_BACKENDS = ["src.apps.accounts.backends.EmailAuthBackend", "django.contrib.auth.backends.ModelBackend"]
